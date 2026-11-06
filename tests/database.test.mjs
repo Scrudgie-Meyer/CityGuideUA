@@ -116,3 +116,57 @@ test('Railway refuses to use an ephemeral database without a volume', () => {
     path.join('/persistent', 'cityguide.sqlite'),
   );
 });
+
+test('refresh is limited to once per minute', async () => {
+  const r = new CityRepository(':memory:');
+  try {
+    let calls = 0;
+    const service = new CatalogService(r, {
+      client: {
+        fetchCities: async () => {
+          calls += 1;
+          throw new Error('offline');
+        },
+      },
+    });
+    await assert.rejects(service.refresh(), /offline/);
+    await assert.rejects(service.refresh(), (error) => error.status === 429);
+    assert.equal(calls, 1);
+  } finally {
+    r.close();
+  }
+});
+
+test('a second import is rejected while the first one is running', async () => {
+  const r = new CityRepository(':memory:');
+  try {
+    let stop;
+    const service = new CatalogService(r, {
+      client: {
+        fetchCities: () =>
+          new Promise((_resolve, reject) => {
+            stop = () => reject(new Error('stopped'));
+          }),
+      },
+    });
+    const first = service.importCities(['Q1899']);
+    await assert.rejects(service.importCities(['Q36036']), (error) => error.status === 409);
+    stop();
+    await assert.rejects(first, /stopped/);
+    assert.deepEqual(r.stats(), { cities: 12, triples: 144 });
+  } finally {
+    r.close();
+  }
+});
+
+test('only one SPARQL query runs at a time', async () => {
+  const r = new CityRepository(':memory:');
+  try {
+    const service = new CatalogService(r);
+    const first = service.query(POPULATION_QUERY);
+    await assert.rejects(service.query(POPULATION_QUERY), (error) => error.status === 429);
+    assert.equal((await first).total, 7);
+  } finally {
+    r.close();
+  }
+});
