@@ -136,8 +136,8 @@ function openDetail(c) {
   for (const [label, value] of [
     ['Населення за джерелом', c.population !== null ? format.format(c.population) : 'Не вказано'],
     ['Дата спостереження', dateLabel(c.population_date)],
-    ['Широта', c.latitude !== null ? `${c.latitude}°` : 'Не вказано'],
-    ['Довгота', c.longitude !== null ? `${c.longitude}°` : 'Не вказано'],
+    ['Широта', c.latitude !== null ? `${c.latitude.toFixed(4)}°` : 'Не вказано'],
+    ['Довгота', c.longitude !== null ? `${c.longitude.toFixed(4)}°` : 'Не вказано'],
   ]) {
     const group = el('div');
     group.append(el('dt', label), el('dd', value));
