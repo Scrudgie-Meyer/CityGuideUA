@@ -1,0 +1,8 @@
+node_modules/
+.tools/
+.cache/
+data/
+coverage/
+dist/vendor/
+dist/cities.json
+tests/wikidata-fixture.json

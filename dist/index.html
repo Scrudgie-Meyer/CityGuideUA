@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#163b36" />
+    <meta
+      name="description"
+      content="Відкривайте міста України через відкриті дані Wikidata. Пошук, обране, координати та семантичні запити."
+    />
+    <title>CityGuide UA — міста України</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23163b36'/%3E%3Ctext x='9' y='29' fill='%23eff4c6' font-size='27' font-family='serif'%3Eм%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#catalog">До каталогу</a>
+    <header class="header wrap">
+      <a href="#" class="brand" aria-label="CityGuide UA, головна"
+        ><span class="brand-icon">м</span> CityGuide <span class="brand-ua">UA</span></a
+      >
+      <nav aria-label="Основна навігація">
+        <a href="#catalog">Міста</a
+        ><button id="saved-nav" class="nav-button">Обране <span id="saved-count">0</span></button
+        ><a href="#semantic">Відкриті дані <span aria-hidden="true">↗</span></a>
+      </nav>
+      <span class="header-note"><span class="dot"></span> Знайомтесь з Україною</span>
+    </header>
+    <main>
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Відкриті дані. Знайомі міста.</p>
+          <h1 id="hero-title">Україна.<br /><em>Місто за містом.</em></h1>
+          <p class="intro">
+            Від великих центрів до затишних вулиць.<br />Знайдіть місто, дізнайтесь більше<br
+              class="desktop-break"
+            />
+            і збережіть те, що зацікавило.
+          </p>
+          <a class="primary" href="#catalog">Переглянути міста <span aria-hidden="true">↗</span></a>
+          <div class="hero-meta">
+            <span><strong id="catalog-total">—</strong> міст у каталозі</span
+            ><span><strong>Wikidata</strong> відкрите джерело</span>
+          </div>
+        </div>
+        <div class="geography">
+          <div class="geo-heading"><span>Географія каталогу</span><span>46°–52° N</span></div>
+          <svg
+            id="geo-map"
+            viewBox="0 0 560 380"
+            role="img"
+            aria-label="Розташування міст за довготою та широтою"
+          ></svg>
+          <div class="geo-bottom">
+            <span>Кожна точка — окрема історія</span
+            ><span class="compass" aria-hidden="true">N ↑</span>
+          </div>
+        </div>
+      </section>
+      <section class="catalog-section" id="catalog" aria-labelledby="catalog-title">
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Ваш наступний погляд на Україну</p>
+              <h2 id="catalog-title">Знайдіть своє місто</h2>
+            </div>
+            <button class="text-button" id="refresh">
+              <span aria-hidden="true">↻</span> Оновити з Wikidata
+            </button>
+          </div>
+          <div class="toolbar">
+            <label class="search"
+              ><span aria-hidden="true">⌕</span
+              ><input
+                id="search"
+                type="search"
+                placeholder="Назва міста або ключове слово"
+                aria-label="Пошук міст"
+            /></label>
+            <div class="filter-tabs" role="group" aria-label="Фільтр міст">
+              <button id="all-tab" class="active" aria-pressed="true">Усі міста</button
+              ><button id="saved-tab" aria-pressed="false">
+                Моє обране <span aria-hidden="true">♡</span>
+              </button>
+            </div>
+            <label class="sort"
+              ><span>Порядок</span
+              ><select id="sort">
+                <option value="name">За назвою</option>
+                <option value="population">За населенням</option>
+              </select></label
+            >
+          </div>
+          <div class="catalog-meta">
+            <span id="result-count">Завантаження міст…</span><span id="snapshot-date"></span>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+          <div id="city-grid" class="city-grid"></div>
+          <div id="empty" class="empty" hidden>
+            <h3>Тут поки тихо</h3>
+            <p id="empty-description"></p>
+            <button id="reset" class="secondary">Показати всі міста</button>
+          </div>
+          <div class="data-note">
+            <span aria-hidden="true">ⓘ</span>
+            <p>
+              Населення наведено за датою спостереження у джерелі. Ці історичні значення можуть
+              відрізнятися від поточної чисельності. Каталог зберігається у серверній базі та може
+              розширюватися.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="semantic" class="semantic wrap" aria-labelledby="semantic-title">
+        <div>
+          <p class="eyebrow">За кожним числом є джерело</p>
+          <h2 id="semantic-title">Дані, які можна<br /><em>досліджувати.</em></h2>
+          <p>
+            Картки пов’язані з оригінальними сутностями Wikidata. Перевірте походження запису,
+            збережіть RDF або виконайте запит до графа.
+          </p>
+          <div class="semantic-actions">
+            <button id="export" class="primary">
+              Завантажити RDF <span aria-hidden="true">↓</span></button
+            ><a
+              href="https://www.wikidata.org/wiki/Wikidata:Data_access"
+              target="_blank"
+              rel="noreferrer"
+              class="text-button"
+              >Про Wikidata ↗</a
+            >
+          </div>
+          <p class="small-note">
+            Структуровані дані Wikidata — CC0. Обране зберігається лише у вашому браузері.
+          </p>
+        </div>
+        <div class="query-panel">
+          <div class="query-top">
+            <span>SPARQL дослідження</span><span>Серверний RDF-граф</span>
+          </div>
+          <label class="sr-only" for="query">SPARQL SELECT-запит</label
+          ><textarea id="query" spellcheck="false"></textarea>
+          <div class="query-actions">
+            <button id="run-query" class="secondary">
+              Виконати запит <span aria-hidden="true">↗</span></button
+            ><button id="reset-query" class="text-button">Початковий запит</button>
+          </div>
+          <p id="query-status" class="small-note" role="status">
+            SPARQL виконується на сервері над графом із бази даних.
+          </p>
+          <div id="query-result" class="query-result"></div>
+        </div>
+      </section>
+    </main>
+    <footer class="wrap footer">
+      <a href="#" class="brand">CityGuide <span class="brand-ua">UA</span></a
+      ><span>Досліджуйте міста. Зберігайте цікаві відкриття.</span><span>Semantic Web · 2026</span>
+    </footer>
+    <dialog id="city-dialog" aria-labelledby="detail-title">
+      <div class="dialog-top">
+        <span class="eyebrow">Картка міста</span
+        ><button id="close-dialog" class="icon-button" aria-label="Закрити картку">✕</button>
+      </div>
+      <div id="detail-content"></div>
+    </dialog>
+    <noscript
+      ><p class="wrap">Для пошуку, обраного та SPARQL увімкніть JavaScript у браузері.</p></noscript
+    >
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

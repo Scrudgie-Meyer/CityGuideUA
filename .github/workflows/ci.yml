@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install pinned quality tools
+        run: npm ci --ignore-scripts
+      - name: Check code style and static analysis
+        run: npm run check
+      - name: Test database persistence, ingestion, RDF, SPARQL and HTTP with coverage
+        run: npm run test:coverage
+      - name: Build the production container
+        run: docker build --tag cityguide:ci .
+      - name: Start the production container
+        run: docker run --detach --name cityguide-ci --env PORT=3000 --publish 127.0.0.1:8080:3000 cityguide:ci
+      - name: Verify the production container
+        shell: bash
+        run: |
+          ready=0
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/healthz; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          curl --fail --silent http://127.0.0.1:8080/ | grep -q '<title>CityGuide UA'
+          curl --fail --silent --head http://127.0.0.1:8080/vendor/web_bg.wasm | grep -qi 'content-type: application/wasm'
+      - name: Print container logs
+        if: always()
+        run: docker logs cityguide-ci || true
+      - name: Remove test container
+        if: always()
+        run: docker rm --force cityguide-ci || true
